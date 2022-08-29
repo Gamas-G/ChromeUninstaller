@@ -1,0 +1,6 @@
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\bin\Debug\ChromeDesin.exe
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\bin\Debug\ChromeDesin.pdb
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.csproj.AssemblyReference.cache
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.csproj.CoreCompileInputs.cache
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.exe
+C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.pdb

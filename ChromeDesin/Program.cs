@@ -9,59 +9,56 @@ namespace ChromeDesin
 {
     class Program
     {
+
         static void Main(string[] args)
         {
+            int construccion = 0; //0 = Chrome por default
             /*Rutas predeterminada en la unidad C*/
-            string pathProgramx86 = @"C:\Program Files (x86)\Google\Chrome\Application"
-                  ,pathProgram    = @"C:\Program Files\Google\Chrome\Application"
-                  ,nombre = "Saday"
-                  ,saludo = "No se";
-            
+            string navegador = "Brave"
+                 , directProgram    = "Program Files"
+                 , directProgramx86 = "Program Files (x86)"
+                 , raizPath         = "C:\\{direct}\\Google\\Chrome\\Application"
+                 , version          = "104.0.5112.102";
+
+                  //, pathProgram      = @"C:\Program Files\Google\Chrome\Application"
+
             string[] pathsProgram86
                     ,pathsProgram;
             
             List<string> pathx86 = new List<string>()
                         ,paths = new List<string>();
 
-            string archivoBat = "@echo off\n" +
-                                "echo hola {nombre} espero que estes {saludo}";
+            string command = "@echo off&" +
+                             "C:&" +
+                             "{direct}\\{version}\\Installer\\setup.exe --uninstall --multi-install --chrome --msi --system-level --force-uninstall";
 
-            string archivoBatFormat = "@echo off\n" +
-                                "echo hola {0} espero que estes {1}\n" +
-                                "dir";
-            //Console.WriteLine("Esto es un comando con c#");
-            //DriveInfo dirve = new DriveInfo(@"C:\");
-            ////var unidades = DriveInfo.GetDrives();
-            //DirectoryInfo dirInfo = dirve.RootDirectory;
-
-            //ProcessStartInfo info = new ProcessStartInfo("cmd", "/c cd.. dir")
+            //using (StreamWriter sw = mio.StandardInput)
             //{
-            //    RedirectStandardOutput = true,
-            //    UseShellExecute = false,
-            //    CreateNoWindow = false
-            //};
+            //    sw.WriteLine("cd..");
+            //    sw.WriteLine("cd..");
+            //    sw.WriteLine("dir");
+            //}
 
-            //Process proceso = new Process()
-            //{
-            //    StartInfo = info,
+            if (!ValidarNavegador(navegador)) return;
+            
+            var resultado = command.Replace("{direct}", raizPath)
+                                   .Replace("{version}", version);
 
-            //};
-            //proceso.Start();
-            //string resultado = proceso.StandardOutput.ReadToEnd();
-            //Console.WriteLine(resultado);
+            //var result2 = resultado.Replace("{direct}",directProgram);
 
-            var resultado = archivoBat.Replace("{nombre}", nombre)
-                                      .Replace("{saludo}", saludo);
+            //var resultadoFormat = string.Format(archivoBatFormat,nombre,saludo);
 
-            var resultadoFormat = string.Format(archivoBatFormat,nombre,saludo);
+            //Console.WriteLine(result2);
 
-            Console.WriteLine(resultado);
-            Console.WriteLine(resultadoFormat);
+            //Console.ReadLine();
+
+            //Console.WriteLine(resultadoFormat);
+            //Console.ReadLine();
 
 
             try
             {
-                pathsProgram86 = Directory.GetDirectories(pathProgramx86);
+                pathsProgram86 = Directory.GetDirectories(raizPath.Replace("{direct}", directProgramx86));
 
             }
             catch (Exception)
@@ -70,8 +67,7 @@ namespace ChromeDesin
             }
             try
             {
-
-                pathsProgram = Directory.GetDirectories(pathProgram);
+                pathsProgram = Directory.GetDirectories(raizPath.Replace("{direct}", directProgram));
             }
             catch (Exception)
             {
@@ -83,12 +79,8 @@ namespace ChromeDesin
             {
                 foreach (var folder in pathsProgram)
                 {
-                    if (folder.Contains("104"))
-                    {
+                    if (folder.Contains("91") || folder.Contains("104"))
                         paths.Add(folder);
-                        Console.WriteLine("Esto esta en Programe Files " + folder);
-                        Console.WriteLine($"Esto esta {folder} en el archivo Programe Files");
-                    }
                 }
             }
 
@@ -96,11 +88,8 @@ namespace ChromeDesin
             {
                 foreach (var folder in pathsProgram86) 
                 {
-                    if (folder.Contains("104"))
-                    {
+                    if (folder.Contains("91") || folder.Contains("104"))
                         paths.Add(folder);
-                        Console.WriteLine(" Esto esta en Programe Files (x86)" + folder);
-                    }
                 }
             }
 
@@ -110,13 +99,51 @@ namespace ChromeDesin
                 Console.WriteLine(item);
             }
 
+            //Process mio = new Process();
+            //ProcessStartInfo info = new ProcessStartInfo();
+
+            //info.FileName = "cmd.exe";
+            //info.Arguments = "/C " + result2;
+            //info.UseShellExecute = false;
+            //info.RedirectStandardInput = false;
+            //info.RedirectStandardOutput = false;
+            //mio.StartInfo = info;
+            //mio.Start();
+
             Console.ReadLine();
         }
-    }
 
-    class BatParametres
-    {
-        string nombre
-              ,saludo;
+        private static bool ValidarNavegador(string navegador)
+        {
+            try
+            {
+
+                Process[] navegadores = Process.GetProcessesByName(navegador);
+                if (navegadores.Length != 0)
+                {
+                    Console.WriteLine("El navegador Brave esta abierto..Procediendo a cerrar");
+                    ExecuteCommands($"taskkill /F /IM {navegador}.exe /T");
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static void ExecuteCommands(string command)
+        {
+            Process mio = new Process();
+            ProcessStartInfo info = new ProcessStartInfo();
+
+            info.FileName = "cmd.exe";
+            info.Arguments = $"/C {command}";
+            info.UseShellExecute = false;
+            info.RedirectStandardInput = false;
+            info.RedirectStandardOutput = false;
+            mio.StartInfo = info;
+            mio.Start();
+        }
     }
 }

@@ -4,3 +4,9 @@ C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.csproj
 C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.csproj.CoreCompileInputs.cache
 C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.exe
 C:\Users\kukul\source\repos\ChromeDesin\ChromeDesin\obj\Debug\ChromeDesin.pdb
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\bin\Debug\ChromeDesin.exe
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\bin\Debug\ChromeDesin.pdb
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.csproj.AssemblyReference.cache
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.csproj.CoreCompileInputs.cache
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.exe
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.pdb

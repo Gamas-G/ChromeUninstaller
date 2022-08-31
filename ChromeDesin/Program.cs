@@ -14,52 +14,40 @@ namespace ChromeDesin
         {
             int construccion = 0; //0 = Chrome por default
             /*Rutas predeterminada en la unidad C*/
-            string navegador = "Brave"
+            string navegador        = "Chrome"
                  , directProgram    = "Program Files"
                  , directProgramx86 = "Program Files (x86)"
                  , raizPath         = "C:\\{direct}\\Google\\Chrome\\Application"
-                 , version          = "104.0.5112.102";
+                 , raizdeleted      = "\"C:\\{url}\\Google\"";
 
                   //, pathProgram      = @"C:\Program Files\Google\Chrome\Application"
 
             string[] pathsProgram86
                     ,pathsProgram;
             
-            List<string> pathx86 = new List<string>()
-                        ,paths = new List<string>();
+            List<string> paths = new List<string>()
+                        ,deletedDirectory = new List<string>();
 
             string command = "@echo off&" +
                              "C:&" +
-                             "{direct}\\{version}\\Installer\\setup.exe --uninstall --multi-install --chrome --msi --system-level --force-uninstall";
+                             "IF EXIST \"{raiz}\\Installer\\setup.exe\" " +
+                             "(\"{raiz}\\Installer\\setup.exe\" --uninstall --multi-install --chrome --msi --system-level --force-uninstall)";
 
-            //using (StreamWriter sw = mio.StandardInput)
-            //{
-            //    sw.WriteLine("cd..");
-            //    sw.WriteLine("cd..");
-            //    sw.WriteLine("dir");
-            //}
+            string deletedCommand = "@echo off$" +
+                                    "C:&" +
+                                    "rmdir {url} /s /q";
 
-            if (!ValidarNavegador(navegador)) return;
+            Process.Start("C:\\Windows\\system32\\cmd.exe");
+            //ExecuteCommands("dir");
+            Console.ReadLine();
             
-            var resultado = command.Replace("{direct}", raizPath)
-                                   .Replace("{version}", version);
+            if (!ValidarNavegador(navegador)) return;
 
-            //var result2 = resultado.Replace("{direct}",directProgram);
-
-            //var resultadoFormat = string.Format(archivoBatFormat,nombre,saludo);
-
-            //Console.WriteLine(result2);
-
-            //Console.ReadLine();
-
-            //Console.WriteLine(resultadoFormat);
-            //Console.ReadLine();
-
-
+            //Obtencion de las versiones
             try
             {
+                deletedDirectory.Add(raizdeleted.Replace("{url}",directProgramx86));
                 pathsProgram86 = Directory.GetDirectories(raizPath.Replace("{direct}", directProgramx86));
-
             }
             catch (Exception)
             {
@@ -67,6 +55,7 @@ namespace ChromeDesin
             }
             try
             {
+                deletedDirectory.Add(raizdeleted.Replace("{url}", directProgram));
                 pathsProgram = Directory.GetDirectories(raizPath.Replace("{direct}", directProgram));
             }
             catch (Exception)
@@ -75,11 +64,13 @@ namespace ChromeDesin
                 pathsProgram = null;
             }
 
+
+            //Validando si contiene datos y si es la version que se decea desinstalar
             if (pathsProgram != null)
             {
                 foreach (var folder in pathsProgram)
                 {
-                    if (folder.Contains("91") || folder.Contains("104"))
+                    if (folder.Contains("87") || folder.Contains("105"))
                         paths.Add(folder);
                 }
             }
@@ -88,27 +79,44 @@ namespace ChromeDesin
             {
                 foreach (var folder in pathsProgram86) 
                 {
-                    if (folder.Contains("91") || folder.Contains("104"))
+                    if (folder.Contains("87") || folder.Contains("105"))
                         paths.Add(folder);
                 }
             }
 
+
             Console.WriteLine($"Cantidad total : { paths.Count() }");
+            //Construimos los UninstallersPaths
             foreach (var item in paths)
             {
-                Console.WriteLine(item);
+                try
+                {
+                    Console.WriteLine(item);
+                    //Console.WriteLine(command.Replace("{raiz}", item));
+                    //Procedemos a desinstalar el navegador
+                    ExecuteCommands(command.Replace("{raiz}", item));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"No se pudo desisntalar el navegador {item}");
+                    continue;
+                }
             }
 
-            //Process mio = new Process();
-            //ProcessStartInfo info = new ProcessStartInfo();
-
-            //info.FileName = "cmd.exe";
-            //info.Arguments = "/C " + result2;
-            //info.UseShellExecute = false;
-            //info.RedirectStandardInput = false;
-            //info.RedirectStandardOutput = false;
-            //mio.StartInfo = info;
-            //mio.Start();
+            //Eliminando carpeta
+            foreach (var folder in deletedDirectory)
+            {
+                try
+                {
+                    Console.WriteLine(deletedCommand.Replace("{url}",folder));
+                    ExecuteCommands(raizdeleted.Replace("{url}", folder));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Error al eliminar el directorio {folder}");
+                    continue;
+                }
+            }
 
             Console.ReadLine();
         }
@@ -121,7 +129,7 @@ namespace ChromeDesin
                 Process[] navegadores = Process.GetProcessesByName(navegador);
                 if (navegadores.Length != 0)
                 {
-                    Console.WriteLine("El navegador Brave esta abierto..Procediendo a cerrar");
+                    Console.WriteLine($"El navegador {navegador} esta abierto..Procediendo a cerrar");
                     ExecuteCommands($"taskkill /F /IM {navegador}.exe /T");
                 }
                 return true;
@@ -130,10 +138,11 @@ namespace ChromeDesin
             {
                 return false;
             }
-        }
+        }//matamos los procesos del navegador si estan abiertos
 
         private static void ExecuteCommands(string command)
         {
+            //Ejecución de comandos
             Process mio = new Process();
             ProcessStartInfo info = new ProcessStartInfo();
 
@@ -141,9 +150,10 @@ namespace ChromeDesin
             info.Arguments = $"/C {command}";
             info.UseShellExecute = false;
             info.RedirectStandardInput = false;
+            info.CreateNoWindow = false;
             info.RedirectStandardOutput = false;
             mio.StartInfo = info;
             mio.Start();
-        }
+        }//Ejecución de comandos, por medio de terminal
     }
 }

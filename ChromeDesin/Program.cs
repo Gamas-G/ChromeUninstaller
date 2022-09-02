@@ -12,13 +12,13 @@ namespace ChromeDesin
 
         static void Main(string[] args)
         {
-            int construccion = 0; //0 = Chrome por default
+            bool bandera = false;
             /*Rutas predeterminada en la unidad C*/
-            string navegador        = "Chrome"
-                 , directProgram    = "Program Files"
+            string navegador = "Chrome"
+                 , directProgram = "Program Files"
                  , directProgramx86 = "Program Files (x86)"
-                 , raizPath         = "C:\\{direct}\\Google\\Chrome\\Application"
-                 , raizdeleted      = "\"C:\\{url}\\Google\"";
+                 , raizPath = "C:\\{direct}\\Google\\Chrome\\Application"
+                 , raizdeleted = "\"C:\\{url}\\Google\"";
 
                   //, pathProgram      = @"C:\Program Files\Google\Chrome\Application"
 
@@ -28,25 +28,23 @@ namespace ChromeDesin
             List<string> paths = new List<string>()
                         ,deletedDirectory = new List<string>();
 
-            string command = "@echo off&" +
+            //Comando para desinstalar
+            /*string command = "@echo off&" +
                              "C:&" +
                              "IF EXIST \"{raiz}\\Installer\\setup.exe\" " +
-                             "(\"{raiz}\\Installer\\setup.exe\" --uninstall --multi-install --chrome --msi --system-level --force-uninstall)";
+                             "(\"{raiz}\\Installer\\setup.exe\" --uninstall --multi-install --chrome --msi --system-level --force-uninstall)";*/
+
+            string command = "@ECHO OFF&" +
+                             "wmic product where name=\"Google Chrome\" call uninstall /nointeractive";
 
             string deletedCommand = "@echo off$" +
                                     "C:&" +
                                     "rmdir {url} /s /q";
 
-            Process.Start("C:\\Windows\\system32\\cmd.exe");
-            //ExecuteCommands("dir");
-            Console.ReadLine();
-            
-            if (!ValidarNavegador(navegador)) return;
-
             //Obtencion de las versiones
             try
             {
-                deletedDirectory.Add(raizdeleted.Replace("{url}",directProgramx86));
+                //deletedDirectory.Add(raizdeleted.Replace("{url}",directProgramx86));
                 pathsProgram86 = Directory.GetDirectories(raizPath.Replace("{direct}", directProgramx86));
             }
             catch (Exception)
@@ -55,7 +53,7 @@ namespace ChromeDesin
             }
             try
             {
-                deletedDirectory.Add(raizdeleted.Replace("{url}", directProgram));
+                //deletedDirectory.Add(raizdeleted.Replace("{url}", directProgram));
                 pathsProgram = Directory.GetDirectories(raizPath.Replace("{direct}", directProgram));
             }
             catch (Exception)
@@ -70,8 +68,11 @@ namespace ChromeDesin
             {
                 foreach (var folder in pathsProgram)
                 {
-                    if (folder.Contains("87") || folder.Contains("105"))
+                    if (folder.Contains("87") || folder.Contains("105") || folder.Contains("104"))
+                    {
                         paths.Add(folder);
+                        bandera = true;
+                    }
                 }
             }
 
@@ -79,46 +80,91 @@ namespace ChromeDesin
             {
                 foreach (var folder in pathsProgram86) 
                 {
-                    if (folder.Contains("87") || folder.Contains("105"))
+                    if (folder.Contains("87") || folder.Contains("105") || folder.Contains("104"))
+                    { 
                         paths.Add(folder);
+                        bandera = true;
+                    }
                 }
             }
 
-
-            Console.WriteLine($"Cantidad total : { paths.Count() }");
-            //Construimos los UninstallersPaths
-            foreach (var item in paths)
+            if (bandera)
             {
-                try
+                Console.WriteLine("Proceso de desinstalacion");
+                if (!ValidarNavegador(navegador)) return;
+                //Construimos los UninstallersPaths
+                foreach (var item in paths)
                 {
-                    Console.WriteLine(item);
-                    //Console.WriteLine(command.Replace("{raiz}", item));
-                    //Procedemos a desinstalar el navegador
-                    ExecuteCommands(command.Replace("{raiz}", item));
+                    try
+                    {
+                        Console.WriteLine(item);
+                        //Console.WriteLine(command.Replace("{raiz}", item));
+                        //Procedemos a desinstalar el navegador
+                        ExecuteCommands(command.Replace("{raiz}", item));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"No se pudo desisntalar el navegador {item}");
+                        continue;
+                    }
                 }
-                catch (Exception)
-                {
-                    Console.WriteLine($"No se pudo desisntalar el navegador {item}");
-                    continue;
-                }
-            }
 
-            //Eliminando carpeta
-            foreach (var folder in deletedDirectory)
-            {
-                try
-                {
-                    Console.WriteLine(deletedCommand.Replace("{url}",folder));
-                    ExecuteCommands(raizdeleted.Replace("{url}", folder));
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"Error al eliminar el directorio {folder}");
-                    continue;
-                }
+                //Detener procesos de CrashHandler
+                //Process[] navegadores = Process.GetProcessesByName("GoogleCrashHandler");
+                //if (navegadores.Length != 0)
+                //{
+                ExecuteCommands($"taskkill /F /IM GoogleCrashHandler.exe /T");
+                //}
+                //Process[] navegadores2 = Process.GetProcessesByName("GoogleCrashHandler64");
+                //if (navegadores2.Length != 0)
+                //{
+                ExecuteCommands($"taskkill /F /IM GoogleCrashHandler64.exe /T");
+                //}
+                Console.WriteLine("Eliminación de archivos reciduales\n");
+                LimpiarArchivos();
             }
+            else
+                Console.WriteLine("Omite toda la desinstalacion");
 
             Console.ReadLine();
+        }
+
+        private static void LimpiarArchivos()
+        {
+            Console.WriteLine("Funcion Limpiar, para administrador too");
+
+            //Directory.Delete("\"C:\\Program Files\\Google\"",true);
+            //Directory.Delete("C:\\\"Program Files (x86)\"\\Google",true);
+            //Directory.Delete(@"C:\Users\lgamasc\AppData\Local\Google", true); //c:\users\elektra\AppData\Local\Google
+
+            DirectoryInfo direcx86 = new DirectoryInfo(@"C:\Program Files (x86)\");
+            DirectoryInfo[] filex86 = direcx86.GetDirectories();
+            foreach (var item in filex86)
+            {
+                if (item.Name == "Google") item.Delete(true);
+            }
+            DirectoryInfo direc = new DirectoryInfo(@"C:\Program Files\");
+            DirectoryInfo[] file = direc.GetDirectories();
+            foreach (var item in file)
+            {
+                if (item.Name == "Google") item.Delete(true);
+            }
+            Console.WriteLine(@"C:\Users\elektra\AppData\Local\");
+            //DirectoryInfo direcAppData = new DirectoryInfo(@"C:\Users\elektra\AppData\Local\");
+            DirectoryInfo direcAppData = new DirectoryInfo(@"E:\Usuarios\lgamasc\AppData\Local\");
+            DirectoryInfo[] fileApp = direcAppData.GetDirectories();
+            foreach (var item in fileApp)
+            {
+                if (item.Name == "Google") item.Delete(true);
+            }
+
+            /*DirectoryInfo direcAppDataAdmi = new DirectoryInfo(@"C:\Users\Administrador\AppData\Local\");
+            DirectoryInfo[] fileAppAdmi = direcAppDataAdmi.GetDirectories();
+            foreach (var item in fileAppAdmi)
+            {
+                if (item.Name == "Google") item.Delete(true);
+            }*/
+        
         }
 
         private static bool ValidarNavegador(string navegador)
@@ -149,11 +195,12 @@ namespace ChromeDesin
             info.FileName = "cmd.exe";
             info.Arguments = $"/C {command}";
             info.UseShellExecute = false;
-            info.RedirectStandardInput = false;
             info.CreateNoWindow = false;
+            info.RedirectStandardInput = false;
             info.RedirectStandardOutput = false;
             mio.StartInfo = info;
             mio.Start();
+            mio.WaitForExit();
         }//Ejecución de comandos, por medio de terminal
     }
 }

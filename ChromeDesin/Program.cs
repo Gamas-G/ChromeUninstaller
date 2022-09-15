@@ -19,31 +19,30 @@ namespace ChromeDesin
             string navegador = "Chrome"
                  , directProgram = "Program Files"
                  , directProgramx86 = "Program Files (x86)"
-                 , raizPath = "C:\\{direct}\\{compania}\\GAMAS"
-
-                 , raizdeleted = "\"C:\\{url}\\Google\"";
-            Navegadores infoBrowsers;
-            string json;
-            List<GlobalInformation> removeBrowsers = new List<GlobalInformation>();
+                 , raizPath = "C:\\\"{direct}\"\\Google\\Chrome\\Application"
+                 , json
+                 , canalTurno
+                 , versionTurno;
 
             string[] pathsProgram86
                    , pathsProgram;
 
+            Navegador infoBrowsers;
+            List<DetalleVersion> removeBrowsers = new List<DetalleVersion>();
+
+            
+
             List<string> paths = new List<string>()
-                        , deletedDirectory = new List<string>();
+                        , repoDirectory = new List<string>();
 
             //deletedDirectory.Add(@"C:\Users\elektra\AppData\Local\");
             //deletedDirectory.Add(@"C:\Users\Administrador\AppData\Local\");
-            deletedDirectory.Add(@"E:\Usuarios\lgamasc\AppData\Local\Google");
-
-            //Comando para desinstalar
-            /*string command = "@echo off&" +
-                             "C:&" +
-                             "IF EXIST \"{raiz}\\Installer\\setup.exe\" " +
-                             "(\"{raiz}\\Installer\\setup.exe\" --uninstall --multi-install --chrome --msi --system-level --force-uninstall)";*/
+            //deletedDirectory.Add(@"E:\Usuarios\lgamasc\AppData\Local\Google");
 
             string command = "@ECHO OFF&" +
-                             "wmic product where name=\"Google Chrome\" call uninstall /nointeractive"; //Parece que esta mata las llaves de registros
+                             "wmic product where name=\"Google Chrome\" call uninstall /nointeractive"
+
+                 ,commandCopy = "xcopy {directory} C:\\Navegadores\\chrome{vers} /c /e /i"; //Parece que esta mata las llaves de registros
 
             string deletedCommand = "@echo off$" +
                                     "C:&" +
@@ -51,43 +50,112 @@ namespace ChromeDesin
 
             Console.WriteLine(command);
 
-            /*pathsProgram86 = Directory.GetDirectories("C:\\Program Files\\Google\\Chrome\\Application");
-            foreach (string item in pathsProgram86)
-            {
-                Console.WriteLine(item);
-            }*/
-
             /*Obtenemos los datos del JSON*/
             using (StreamReader r = new StreamReader(@"E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\NavegadoresConfig.JSON"))
             {
                 json = r.ReadToEnd();
-                infoBrowsers = JsonConvert.DeserializeObject<Navegadores>(json);
+                infoBrowsers = JsonConvert.DeserializeObject<Navegador>(json);
             }
+            //Validación de canal y version
+            //if (!ValidacionPrimordial(infoBrowsers)) return;
 
             /*Buscamos que navegadores tienen la bandera de 'true' para saber quienes se van a desinstalar*/
-            foreach (GlobalInformation nav in infoBrowsers.navegadores)
+            foreach (DetalleVersion detalle in infoBrowsers.detalleVersion)
             {
-                if (!nav.activo)
+                //versionTurno = string.Empty;
+                //canalTurno = string.Empty;
+                versionTurno = detalle.version;
+                canalTurno = detalle.canal;
+                
+
+                Console.WriteLine($"Navegador: {infoBrowsers.nombNavegador}\n Compañia: {infoBrowsers.nombCompania}\n Version: {detalle.version}\nCanal: {detalle.canal}");
+                try
                 {
-                    Console.WriteLine($"El siguiente navegador no entra en el proceso de desinstalación: {nav.navegador}\n");
-                    removeBrowsers.Add(nav);//Los agregamos en una lista(esto lo hacemos ya que no podemos remover en tiempo del ciclo)
+                    StringBuilder raiz = new StringBuilder(raizPath);
+                    raiz.Replace("{direct}", directProgramx86);
+                    raiz.Replace("\"","");
+                    pathsProgram86 = Directory.GetDirectories(raiz.ToString());
+                    repoDirectory.Add(raizPath.Replace("{direct}", directProgramx86));
                 }
+                catch (Exception)
+                {
+                    pathsProgram86 = null;
+                }
+                try
+                {
+                    StringBuilder raiz = new StringBuilder(raizPath);
+                    raiz.Replace("{direct}", directProgram);
+                    raiz.Replace("\"", "");
+                    pathsProgram = Directory.GetDirectories(raiz.ToString());
+                    repoDirectory.Add(raizPath.Replace("{direct}", directProgram));
+                }
+                catch (Exception)
+                {
+
+                    pathsProgram = null;
+                }
+
+                //Validación de version
+                if (pathsProgram != null)
+                {
+                    foreach (var folder in pathsProgram)
+                    {
+                        if (folder.Contains(versionTurno))
+                        {
+                            /*Console.WriteLine("La version que deseas desisntalar se encuentra como estable, procede a terminar ya que ya existe la version como estable, verifica tu JSON");
+                            return;*/
+                            paths.Add(folder);
+                            bandera = true;
+                        }
+                        /*else if (folder.Contains(versionTurno))
+                        {
+                            paths.Add(folder);
+                            bandera = true;
+                        }*/
+                    }
+                }
+
+                if (pathsProgram86 != null)
+                {
+                    foreach (var folder in pathsProgram86)
+                    {
+                        if (folder.Contains(versionTurno))
+                        {
+                            /*Console.WriteLine("La version que deses desisntala se encuentra como estable, verifica tu JSON");
+                            return;*/
+                            paths.Add(folder);
+                            bandera = true;
+                        }
+                        /*else if(folder.Contains(versionTurno))
+                        {
+                            paths.Add(folder);
+                            bandera = true;
+                        }*/
+                    }
+                }
+                if (!bandera)
+                {
+                    Console.WriteLine("La version que deseas desinstalar, no existe, precede a terminar");
+                    return;
+                }
+                //Procedemos a hacer la copia
+                RepoAddBrowser(repoDirectory, commandCopy, versionTurno);
             }
 
-            if (removeBrowsers.Count() != 0)
+            /*if (removeBrowsers.Count() != 0)
             {
                 //Removemos los navegadores que no procederan a la desinstalación
                 foreach (GlobalInformation navRe in removeBrowsers)
                 {
                     infoBrowsers.navegadores.Remove(navRe);
                 }
-            }
+            }*/
 
 
 
 
             //Procesaremos todos los navegadores(seria el ciclo donde realiza todo el trabajo)
-            foreach (var item in infoBrowsers.navegadores)
+            /*foreach (var item in infoBrowsers.navegadores)
             {
                 raizPath = infoBrowsers.raizPath;
                 bandera = false;
@@ -178,7 +246,7 @@ namespace ChromeDesin
                 Console.WriteLine("Procedemos a mover el navegador estable al nuevo directorio");
                 RepoAddBrowser("xcopy E:\\Usuarios\\lgamasc\\Desktop\\GIT E:\\Usuarios\\lgamasc\\Desktop\\EJEMPLO /E");
 
-            }
+            }*/
 
 
 
@@ -186,7 +254,7 @@ namespace ChromeDesin
             //Obtencion de las versiones
             try
             {
-                deletedDirectory.Add(raizdeleted.Replace("{url}", directProgramx86));
+                //deletedDirectory.Add(raizdeleted.Replace("{url}", directProgramx86));
                 pathsProgram86 = Directory.GetDirectories(raizPath.Replace("{direct}", directProgramx86));
             }
             catch (Exception)
@@ -195,19 +263,13 @@ namespace ChromeDesin
             }
             try
             {
-                deletedDirectory.Add(raizdeleted.Replace("{url}", directProgram));
+                //deletedDirectory.Add(raizdeleted.Replace("{url}", directProgram));
                 pathsProgram = Directory.GetDirectories(raizPath.Replace("{direct}", directProgram));
             }
             catch (Exception)
             {
 
                 pathsProgram = null;
-            }
-
-
-            foreach (var item in deletedDirectory)
-            {
-                Console.WriteLine(item);
             }
 
 
@@ -382,29 +444,69 @@ namespace ChromeDesin
             }
         }//Ejecución de comandos, por medio de terminal
         
-        private static void RepoAddBrowser(string command)
+        private static void RepoAddBrowser(List<string> paths, string comando, string version)
         {
-            ExecuteCommands(command);
+            foreach (string direc in paths)
+            {
+                Console.WriteLine(direc);
+                StringBuilder direCopy = new StringBuilder(comando);
+                direCopy.Replace("{directory}", direc);
+                direCopy.Replace("{vers}",version);
+                Console.WriteLine(direCopy.ToString());
+                ExecuteCommands(direCopy.ToString());
+            }
+        }
+        private static bool ValidacionPrimordial(Navegador info)
+        {
+            if (info.detalleVersion.Count() != 2) { //Valida si contiene 2 versiones
+                Console.WriteLine("El navegador no cuenta con 2 versiones, por lo cual no se podra, realizar la desisntalacion y el respaldo"); 
+                return false;
+            }else if(info.detalleVersion.Count() == 2)//Si contenemos 2 versiones tenemos que asegurarno que
+            {
+                //Ambos canales no sean iguales, ya que uno tiene que moverse a nuestro directorio donde almacenara las versiones, dandole paso a la nueva version(la beta que sera la nueva)
+                if( (info.detalleVersion[0].canal.Equals("beta") && info.detalleVersion[1].canal.Equals("beta")) || (info.detalleVersion[0].canal.Equals("estable") && info.detalleVersion[1].canal.Equals("estable")))
+                {
+                    Console.WriteLine("Los canales no pueden ser iguaales, favor de revisar su JSON");
+                    return false;
+                }
+                //Validar que versiones y canales no sean lo mismo
+                if ((info.detalleVersion[0].version.Equals(info.detalleVersion[1].version)) || (info.detalleVersion[1].version.Equals(info.detalleVersion[0].version)))
+                {
+                    Console.WriteLine("Las versiones no pueden ser iguales");
+                    return false;
+                }
+                //Validar que utilizen las palabras claves(beta y estable)
+                if (!(info.detalleVersion[0].canal.Equals("beta") || info.detalleVersion[0].canal.Equals("estable")) || !(info.detalleVersion[1].canal.Equals("beta") || info.detalleVersion[1].canal.Equals("estable")))
+                {
+                    Console.WriteLine("Los tipos de canales que se estan manejando no son los apropiados, favbor de revisar tu JSON");
+                    return false;
+                }
+
+            }
+            return true;
         }
     }
-    public class Navegadores
+    public class Navegador
     {
-        //[JsonProperty(PropertyName="raizProgram")]
-        public string raizProgram { get; set; }
-        public string raizProgram86 { get; set; }
-        public string raizPath { get; set; }
-        public string raizDeleted { get; set; }
-        public string directBrowsersVers { get; set; }
-        public List<GlobalInformation> navegadores { get; set; }
+        [JsonProperty(PropertyName = "navegador")]
+        public string nombNavegador { get; set; }
+
+        [JsonProperty(PropertyName = "compania")]
+        public string nombCompania { get; set; }
+
+        [JsonProperty(PropertyName = "detalle")]
+        public List<DetalleVersion> detalleVersion { get; set; }
     }
-    public class GlobalInformation
+    public class DetalleVersion
     {
-        public string navegador { get; set; }
-        public string compania { get; set; }
-        public bool activo { get; set; }
-        public List<DetNavegador> detalle { get; set; }
-        [JsonProperty(PropertyName = "raizPathAppend")]
-        public string pathAppend { get; set; }
+        [JsonProperty(PropertyName ="version")]
+        public string version { get; set; }
+
+        [JsonProperty(PropertyName ="canal")]
+        public string canal { get; set; }
+        //public List<DetNavegador> detalle { get; set; }
+        //[JsonProperty(PropertyName = "raizPathAppend")]
+        //public string pathAppend { get; set; }
     }
     public class DetNavegador
     {

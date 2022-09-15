@@ -3,3 +3,4 @@ E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\bin\Release\Chrom
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Release\ChromeDesin.csproj.CoreCompileInputs.cache
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Release\ChromeDesin.exe
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Release\ChromeDesin.pdb
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Release\ChromeDesin.csproj.AssemblyReference.cache

@@ -1,0 +1,41 @@
+{
+    "raizProgram": "Program Files",
+    "raizProgram86": "Program Files (x86)",
+    "raizPath": "C:\\{direct}\\{dominio}\\{navegador}\\Application",
+    "raizDeleted": "C:\\{url}\\{dominio}\\",
+    "directBrowsersVers":"C:\\RepBrowsers\\{navegador}",
+    "Navegadores": [
+      {
+        "navegador": "Chrome",
+        "activo" : true,
+        "detalle": [
+          {
+            "version": 87,
+            "activo": true,
+            "canal" : "estable"
+          },
+          {
+            "version": 104,
+            "activo": false,
+            "canal": "beta"
+          }
+        ]
+      },
+      {
+        "navegador": "FireFox",
+        "activo" : false,
+        "detalle": [
+          {
+            "version": 47,
+            "activo": false,
+            "canal": "estable"
+          },
+          {
+            "version": 104,
+            "activo": false,
+            "canal": "beta"
+          }
+        ]
+      }
+    ]
+}

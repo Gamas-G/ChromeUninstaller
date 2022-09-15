@@ -10,3 +10,6 @@ E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeD
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.csproj.CoreCompileInputs.cache
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.exe
 E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.pdb
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\bin\Debug\Newtonsoft.Json.dll
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\bin\Debug\Newtonsoft.Json.xml
+E:\Usuarios\lgamasc\source\repos\ChromeUninstaller\ChromeDesin\obj\Debug\ChromeDesin.csproj.CopyComplete

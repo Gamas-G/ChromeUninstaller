@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<Navegadores>
+	<Navegador name="Google" Activo="1">
+		<Version version="87" Activo="1">
+			<DirectorioProgram>Program Files</DirectorioProgram>
+			<DirectorioProgram86>Program Files (x86)</DirectorioProgram86>
+			<RaizPath>C:\\{direct}\\Google\\Chrome\\Application</RaizPath>
+			<RaizDeleted>C:\{url}\Google\</RaizDeleted>
+		</Version>
+		<Version version="104" Activo="0">
+			<DirectorioProgram></DirectorioProgram>
+			<DirectorioProgram86></DirectorioProgram86>
+			<RaizPath></RaizPath>
+			<RaizDeleted></RaizDeleted>
+		</Version>
+	</Navegador>
+	<Navegador name="Mozilla" Activo="0">
+		<Version version="47">
+			<DirectorioProgram></DirectorioProgram>
+		</Version>
+		<Version version="104">
+			<DirectorioProgram></DirectorioProgram>
+		</Version>
+	</Navegador>
+</Navegadores>

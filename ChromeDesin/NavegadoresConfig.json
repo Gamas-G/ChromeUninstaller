@@ -1,0 +1,40 @@
+{
+  "raizProgram": "Program Files",
+  "raizProgram86": "Program Files (x86)",
+  "raizPath": "C:\\{direct}\\{compania}",
+  "raizDeleted": "C:\\{url}\\{navegador}\\",
+  "directBrowsersVers": "C:\\RepBrowsers\\{navegador}",
+  "navegadores": [
+    {
+      "navegador": "Chrome",
+      "compania": "Google",
+      "activo": true,
+      "detalle": [
+        {
+          "version": 87,
+          "canal": "estable"
+        },
+        {
+          "version": 104,
+          "canal": "beta"
+        }
+      ],
+      "raizPathAppend": "\\Chrome\\Application"
+    },
+    {
+      "navegador": "firefox",
+      "compania": "Mozilla Firefox",
+      "activo": true,
+      "detalle": [
+        {
+          "version": 47,
+          "canal": "estable"
+        },
+        {
+          "version": 104,
+          "canal": "beta"
+        }
+      ]
+    }
+  ]
+}
